@@ -1,0 +1,44 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# Sigmoid函数定义
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+# 洛朗级数逼近函数（修改后）
+def laurent_series_approximation(x, n_terms):
+    approximation = np.zeros_like(x)
+    positive_mask = x >= 0
+    negative_mask = x < 0
+    for n in range(n_terms):
+        if positive_mask.any():
+            approximation[positive_mask] += (-1) ** n * np.exp(-n * x[positive_mask])
+        if negative_mask.any():
+            approximation[negative_mask] += (-1) ** (n - 1) * np.exp(n * x[negative_mask])
+    return approximation
+
+
+# 生成 [-3, 3] 区间上的x值
+x_values = np.linspace(-3, 3, 1000)
+
+# 计算Sigmoid函数的真实值
+true_sigmoid_values = sigmoid(x_values)
+
+# 用洛朗级数逼近并计算逼近值
+n_terms = 1  # 可调整逼近的项数
+approximated_sigmoid_values = laurent_series_approximation(x_values, n_terms)
+
+# 绘制图像对比
+plt.plot(x_values, true_sigmoid_values, label='True Sigmoid')
+plt.plot(x_values, approximated_sigmoid_values, label=f'Laurent Series Approximation (n={n_terms})')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Sigmoid Function and Laurent Series Approximation')
+plt.legend()
+
+# 保存图片的代码
+plt.savefig('/workspace/examples/vision_transformer/Laurent_approximation.png', dpi=300)
+
+plt.show()

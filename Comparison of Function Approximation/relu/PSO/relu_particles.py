@@ -1,0 +1,86 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from pyswarm import pso  # PSO库
+
+# ReLU 函数定义
+def relu(x):
+    return np.maximum(0, x)
+
+# 多项式函数定义
+def polynomial(x, coeffs):
+    return sum(c * x**i for i, c in enumerate(coeffs))
+
+# 误差函数定义（均方误差）
+def error_function(coeffs):
+    # 生成输入点 x 在 [-3, 3] 区间的均匀分布点
+    x_values = np.linspace(-3, 3, 1000)
+    y_true = relu(x_values)
+    y_pred = polynomial(x_values, coeffs)
+
+    # 计算均方误差（MSE）
+    mse = np.mean((y_true - y_pred) ** 2)
+    return mse
+
+# PSO优化函数
+def pso_optimization():
+    # 粒子群优化的参数设置
+    # 系数的数量（比如4次多项式的话系数有5个）
+    num_coeffs = 3
+    lb = [-5] * num_coeffs  # 下界
+    ub = [5] * num_coeffs   # 上界
+
+    # 使用粒子群优化来寻找最优系数
+    best_coeffs, _ = pso(error_function, lb, ub, swarmsize=50, maxiter=100)
+
+    return best_coeffs
+
+# 打印多项式格式函数
+def print_polynomial_format(coeffs):
+    polynomial_str = ""
+    for i, c in enumerate(coeffs):
+        if i == 0:
+            polynomial_str += f"{c}"
+        elif i == 1:
+            polynomial_str += f" + {c}x"
+        else:
+            polynomial_str += f" + {c}x^{i}"
+
+    return polynomial_str
+
+# 绘图函数
+def plot_results(best_coeffs):
+    # 生成输入点 x 在 [-3, 3] 区间的均匀分布点
+    x_values = np.linspace(-3, 3, 1000)
+
+    # 使用最佳系数生成近似的多项式输出
+    y_pred = polynomial(x_values, best_coeffs)
+    y_true = relu(x_values)
+
+    # 绘图
+    plt.figure(figsize=(10, 6))
+    plt.plot(x_values, y_true, label="ReLU Function", color='b', linestyle='-', linewidth=2)
+    plt.plot(x_values, y_pred, label="Polynomial Approximation", color='r', linestyle='--', linewidth=2)
+    plt.legend()
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("ReLU Function and Polynomial Approximation")
+
+    # 保存图片到指定路径
+    plt.savefig('/workspace/examples/vision_transformer/relu_particles_approximation.png', dpi=300)
+    plt.show()
+
+# 主程序
+if __name__ == "__main__":
+    # 使用PSO算法生成多项式系数
+    best_coeffs = pso_optimization()
+
+    # 打印最佳多项式系数
+    print("Optimal Polynomial Coefficients:")
+    print(best_coeffs)
+
+    # 按照要求格式打印多项式
+    polynomial_str = print_polynomial_format(best_coeffs)
+    print("Approximated Polynomial:", polynomial_str)
+
+    # 绘制结果并保存图片
+    plot_results(best_coeffs)

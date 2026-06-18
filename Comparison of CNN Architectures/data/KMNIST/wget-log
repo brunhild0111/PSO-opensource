@@ -1,0 +1,17 @@
+--2025-12-20 09:08:25--  http://codh.rois.ac.jp/kmnist/dataset/kmnist/train-images-idx3-ubyte.gz
+Resolving codh.rois.ac.jp (codh.rois.ac.jp)... 136.187.88.58
+Connecting to codh.rois.ac.jp (codh.rois.ac.jp)|136.187.88.58|:80... connected.
+HTTP request sent, awaiting response... 301 Moved Permanently
+Location: https://codh.rois.ac.jp/kmnist/dataset/kmnist/train-images-idx3-ubyte.gz [following]
+--2025-12-20 09:08:25--  https://codh.rois.ac.jp/kmnist/dataset/kmnist/train-images-idx3-ubyte.gz
+Connecting to codh.rois.ac.jp (codh.rois.ac.jp)|136.187.88.58|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 18165135 (17M)
+Saving to: ‘train-images-idx3-ubyte.gz’
+
+train-images-idx3-ubyte.gz      8%[===>                                             ]   1.48M  --.-KB/s    eta 18h 31mtrain-images-idx3-ubyte.gz      8%[===>                                             ]   1.48M  --.-KB/s    in 1h 43m  
+
+2025-12-20 10:52:14 (249 B/s) - Read error at byte 1551865/18165135 (Connection timed out). Retrying.
+
+--2025-12-20 10:52:15--  (try: 2)  https://codh.rois.ac.jp/kmnist/dataset/kmnist/train-images-idx3-ubyte.gz
+Connecting to codh.rois.ac.jp (codh.rois.ac.jp)|136.187.88.58|:443... connected.

@@ -1,0 +1,159 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 定义sigmoid函数
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# 定义将输入区间[-3, 3]映射到[-1, 1]的变换
+def transform(x, a, b):
+    return (x - a) * 2 / (b - a) - 1  # 线性变换公式
+
+# 定义切比雪夫多项式计算
+def chebyshev_approximation(f, N, a, b):
+    # 计算切比雪夫节点
+    x_k = np.cos((2 * np.arange(N + 1) + 1) * np.pi / (2 * (N + 1)))
+    
+    # 将节点从[-1, 1]映射到[a, b]
+    x_k = 0.5 * (x_k + 1) * (b - a) + a  # 从[-1, 1]到[a, b]的线性变换
+    
+    # 计算函数值
+    f_values = f(x_k)
+    
+    # 计算逼近系数
+    c_n = np.zeros(N + 1)
+    for n in range(N + 1):
+        c_n[n] = 2 / (N + 1) * np.sum(f_values * np.cos(n * np.arccos((2 * x_k - (a + b)) / (b - a))))
+    
+    return c_n, x_k
+
+# 定义逼近的区间和阶数
+a, b = -3, 3
+N = 5  # 设置逼近的阶数
+
+# 计算逼近系数
+c_n, x_k = chebyshev_approximation(sigmoid, N, a, b)
+
+# 构建逼近多项式
+def chebyshev_polynomial(x, c_n, a, b):
+    # 将输入x从[a, b]映射到[-1, 1]
+    x_transformed = transform(x, a, b)
+    
+    T = np.ones_like(x_transformed)
+    result = c_n[0] * T
+    for n in range(1, len(c_n)):
+        T = 2 * ((2 * x_transformed - (a + b)) / (b - a)) * T - T  # 递归计算T_n
+        result += c_n[n] * T
+    return result
+
+# 画图
+x = np.linspace(a, b, 400)
+y_exact = sigmoid(x)
+y_approx = chebyshev_polynomial(x, c_n, a, b)
+
+plt.plot(x, y_exact, label='Sigmoid', color='blue')
+plt.plot(x, y_approx, label=f'Chebyshev Approximation (N={N})', color='red', linestyle='dashed')
+plt.legend()
+plt.title('Chebyshev Approximation of Sigmoid Function')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.grid(True)
+
+# 保存图像到文件
+plt.savefig('/workspace/examples/vision_transformer/chebyshev_approximation.png', dpi=300)  # 保存为 PNG 格式，分辨率设置为 300 dpi
+
+# 显示图像
+plt.show()
+
+
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# Sigmoid函数定义
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+# 切比雪夫多项式定义
+def chebyshev_polynomial(n, x):
+    if n == 0:
+        return 1
+    elif n == 1:
+        return x
+    else:
+        return 2 * x * chebyshev_polynomial(n - 1, x) - chebyshev_polynomial(n - 2, x)
+
+
+# 切比雪夫逼近步骤
+def chebyshev_approximation(N, a, b):
+    # 将区间 [-3, 3] 映射到 [-1, 1] 的系数
+    alpha = (b + a) / 2
+    beta = (b - a) / 2
+
+    # 在 [-1, 1] 上选取离散点，改为取N + 1个点
+    x_cheb = np.cos((np.pi *2* np.arange(N + 1) )/ (2*(N+1)))
+
+    # 映射回原始区间 [-3, 3]
+    x = alpha + beta * x_cheb
+
+    # 计算Sigmoid函数在这些点的值
+    y_sigmoid = sigmoid(x)
+
+    # 计算切比雪夫系数
+    cheb_coeffs = np.zeros(N + 1)
+    for k in  range(N + 1):
+        cheb_coeffs[k] = (2 / (N + 1)) * np.sum(y_sigmoid * chebyshev_polynomial(k, x_cheb))
+
+    return cheb_coeffs
+
+
+def chebyshev_approximate_function(cheb_coeffs, a, b):
+    alpha = (b + a) / 2
+    beta = (b - a) / 2
+
+    def approximate(x):
+        t = (2 * x - (b + a)) / (b - a)
+        approx_value = cheb_coeffs[0] / 2
+        for k in range(1, len(cheb_coeffs)):
+            approx_value += cheb_coeffs[k] * chebyshev_polynomial(k, t)
+        return approx_value
+
+    return approximate
+
+
+# 示例用法
+# 选择逼近的阶数
+N = 5
+print("N:",N)
+a = -3
+b = 3
+
+# 计算切比雪夫系数
+cheb_coeffs = chebyshev_approximation(N, a, b)
+
+# 构建逼近函数
+approximate_sigmoid = chebyshev_approximate_function(cheb_coeffs, a, b)
+
+# 在一些点上测试逼近效果
+x_test = np.linspace(-3, 3, 100)
+y_sigmoid_test = sigmoid(x_test)
+y_approx_test = np.array([approximate_sigmoid(x) for x in x_test])
+
+# 画图
+plt.plot(x_test, y_sigmoid_test, label='Sigmoid', linewidth=2)
+plt.plot(x_test, y_approx_test, label='chebyshev', linestyle='--', linewidth=2)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Chebyshev Approximation of Sigmoid Function')
+plt.legend()
+
+# 保存图片
+plt.savefig('/workspace/examples/vision_transformer/chebyshev_approximation.png', dpi=300)
+
+# 显示图片（可选，如果不需要在程序运行时显示图片可注释掉这行）
+plt.show()
+

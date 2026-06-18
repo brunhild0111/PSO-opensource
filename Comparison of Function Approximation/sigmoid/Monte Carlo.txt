@@ -1,0 +1,91 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+def monte_carlo_approx_sigmoid(num_samples):
+    # 在[-3, 3]区间内随机生成样本点
+    x_samples = np.random.uniform(-3, 3, size=num_samples)
+
+    # 计算每个样本点对应的Sigmoid函数值
+    sigmoid_values = sigmoid(x_samples)
+
+    # 返回这些Sigmoid函数值的平均值作为逼近结果
+    return np.mean(sigmoid_values)
+
+
+# 设置用于多项式拟合的样本点数
+num_fit_samples = 10000
+
+# 在[-3, 3]区间上均匀生成样本点用于多项式拟合
+x_fit = np.linspace(-3, 3, num_fit_samples).reshape(-1, 1)
+y_fit = sigmoid(x_fit)
+
+
+# 根据指定次数进行多项式拟合，并返回包含拟合模型及相关信息的字典
+def polynomial_fit_by_degree(x_fit, y_fit, degree):
+    poly_features = PolynomialFeatures(degree=degree)
+    x_poly = poly_features.fit_transform(x_fit)
+    model = LinearRegression()
+    model.fit(x_poly, y_fit)
+
+    return {
+        "model": model,
+        "poly_features": poly_features
+    }
+
+
+# 设置指定的多项式拟合次数
+specified_degree = 2
+
+# 进行多项式拟合，获取包含拟合模型及相关信息的字典
+fit_result = polynomial_fit_by_degree(x_fit, y_fit, specified_degree)
+model = fit_result["model"]
+poly_features = fit_result["poly_features"]
+
+# 获取拟合模型的系数
+coefficients = model.coef_
+intercept = model.intercept_
+
+# 如果intercept是数组且只有一个元素，获取该元素作为标量值
+if isinstance(intercept, np.ndarray) and intercept.size == 1:
+    intercept = intercept[0]
+
+# 打印近似多项式
+print(f"近似多项式（Degree {specified_degree-1}）:")
+for i, coef in enumerate(coefficients[0][::-1]):
+    if i == 0:
+        print(f"{intercept:.4f}", end="")
+    else:
+        print(f" + {coef:.4f}x^{i}", end="")
+print()
+
+# 生成用于绘制精确Sigmoid函数的x值数组
+x_exact = np.linspace(-3, 3, 1000)
+y_exact = sigmoid(x_exact)
+
+# 绘制精确的Sigmoid函数曲线
+plt.plot(x_exact, y_exact, label='Sigmoid Function', color='blue')
+
+# 预测多项式拟合的结果并绘制曲线
+x_plot = np.linspace(-3, 3, 1000).reshape(-1, 1)
+x_plot_poly = poly_features.fit_transform(x_plot)
+y_plot = model.predict(x_plot_poly)
+plt.plot(x_plot, y_plot, label=f'Polynomial Approximation (Degree {specified_degree-1})', color='green')
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Sigmoid Function vs Polynomial Approximation')
+plt.legend()
+
+# 保存图片到指定路径
+plt.savefig('/workspace/examples/vision_transformer/sigmoid_vs_approx.png')
+
+# 显示图片（可选，如果你想在运行代码时直接查看图片）
+plt.show()
