@@ -1,7 +1,7 @@
 Each dataset and architecture corresponds to a training file in the 'ipynb' folder.
 
-| architecture | dataset | variant | training file No. |
-|---|---|---|---|
+| architecture | variant | training file No. |
+|---|---|---|
 | Chabanne | Baseline(B) & +PSO(+P) | *net1.ipynb |
 | CryptoDL | Baseline(B) & +PSO(+P) | *net2.ipynb |
 | CryptoNN | Baseline(B) & +PSO(+P) | *net3.ipynb |
