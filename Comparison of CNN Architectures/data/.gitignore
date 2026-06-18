@@ -1,5 +1,6 @@
-.mat
-.gz
-.jpeg
-.jpg
-.bz2
+
+*.mat
+*.gz
+*.jpeg
+*..jpg
+*..bz2

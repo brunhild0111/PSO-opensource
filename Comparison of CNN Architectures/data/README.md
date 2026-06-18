@@ -1,7 +1,7 @@
 Each dataset and architecture corresponds to a model file in the 'data/module net' folder.
 
 | architecture | dataset | variant | model file No. |
-|---|---|---|
+|---|---|---|---|
 | Chabanne | MNIST | Baseline(B) | model100.h5 |
 | Chabanne | MNIST | +PSO(+P) | model101.h5 |
 | Chabanne | MNIST | +PSO+CAF(+P+CAF) | model310.h5 |
